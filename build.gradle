@@ -1,16 +1,34 @@
 plugins {
     id 'java'
+    id 'application'
 }
-
-group 'org.example'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
+application {
+    mainClassName = 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+}
+
+group 'info.johtani.misc.cli'
+version '0.10.0-SNAPSHOT'
+description "Kuromoji CLI"
+
+sourceCompatibility = 12
+
 dependencies {
+    compile "org.apache.lucene:lucene-core:${luceneVersion}"
+    compile "org.apache.lucene:lucene-analyzers-common:${luceneVersion}"
+    compile "org.apache.lucene:lucene-analyzers-kuromoji:${luceneVersion}"
+    compile 'info.picocli:picocli:4.2.0'
+    annotationProcessor 'info.picocli:picocli-codegen:4.2.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+    }
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 }
