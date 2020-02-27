@@ -58,6 +58,8 @@ gradle build
 トートバッグ    名詞,一般,*,*,*,*,トートバッグ,*,*
 ```
 
+*NOTE:* Kuromoji doesn't have base form if original token is same as base form. This CLI outputs original token if base form is null.
+
 ## License
 
 Apache License 2.0
