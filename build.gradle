@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id "com.palantir.graal" version "0.6.0-102-ga30de19"
 }
 
 repositories {
@@ -12,10 +13,10 @@ application {
 }
 
 group 'info.johtani.misc.cli'
-version '0.10.0-SNAPSHOT'
+version '0.9.0-SNAPSHOT'
 description "Kuromoji CLI"
 
-sourceCompatibility = 12
+sourceCompatibility = 8
 
 dependencies {
     compile "org.apache.lucene:lucene-core:${luceneVersion}"
@@ -31,4 +32,10 @@ jar {
         attributes 'Main-Class': 'info.johtani.misc.cli.kuromoji.KuromojiCli'
     }
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+graal {
+    mainClass 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+    outputName 'kuromoji'
+    graalVersion '19.2.0'
 }

@@ -11,22 +11,27 @@ This plugin provide Command Line Interface for Lucene Kuromoji.
 ### Requirements
 
 * Gradle >= 6.0.1
-* JDK >= 12
+* GraalVM >= java11-19.3.0 or JDK >= 1.8
 
-### Build
+### Build Native Image using JDK
+
+**LIMITATION: Currently not support building stand-alone image...**
 
 ```
-gradle build
+./gradle nativeImage
 ```
+
+Then, gradle builds native command `kuromoji` in `build/graal` directory.
+
+*NOTE:* `kuromoji` command needs `build/libs` directory, because this is a fallback image that requires a JDK for execution.
+
 
 ## Usage
-
-*WIP*: Still work in progress. Stay tuned.
 
 ### Basic usage
 
 ```
-% java -jar kuromoji-<Version>.jar 関西国際空港限定トートバッグ
+% kuromoji 関西国際空港限定トートバッグ
 関西 関西国際空港 国際 空港 限定 トートバッグ
 ```
 
@@ -35,12 +40,12 @@ gradle build
 `NORMAL`, `SEARCH`, `EXTENDED` can be specified. Default is `SEARCH`
 
 ```
-% java -jar kuromoji-<Version>.jar -m=NORMAL 関西国際空港限定トートバッグ
+% kuromoji -m=NORMAL 関西国際空港限定トートバッグ
 関西国際空港 限定 トートバッグ
 ```
 
 ```
-% java -jar kuromoji-<Version>.jar -m=EXTENDED 関西国際空港限定トートバッグ
+% kuromoji -m=EXTENDED 関西国際空港限定トートバッグ
 関西 国際 空港 限定 ト ー ト バ ッ グ
 ```
 
@@ -49,7 +54,7 @@ gradle build
 `wakati`, `mecab` can be specified. Default is `wakati`
 
 ```
-% java -jar kuromoji-<Version>.jar -o=mecab 関西国際空港限定トートバッグ
+% kuromoji -o=mecab 関西国際空港限定トートバッグ
 関西    名詞,固有名詞,地域,一般,*,*,関西,カンサイ,カンサイ
 関西国際空港    名詞,固有名詞,組織,*,*,*,関西国際空港,カンサイコクサイクウコウ,カンサイコクサイクーコー
 国際    名詞,一般,*,*,*,*,国際,コクサイ,コクサイ
@@ -57,8 +62,6 @@ gradle build
 限定    名詞,サ変接続,*,*,*,*,限定,ゲンテイ,ゲンテイ
 トートバッグ    名詞,一般,*,*,*,*,トートバッグ,*,*
 ```
-
-*NOTE:* Kuromoji doesn't have base form if original token is same as base form. This CLI outputs original token if base form is null.
 
 ## License
 
