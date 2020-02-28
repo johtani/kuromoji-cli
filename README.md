@@ -24,7 +24,15 @@ This plugin provide Command Line Interface for Lucene Kuromoji.
 Then, gradle builds native command `kuromoji` in `build/graal` directory.
 
 *NOTE:* `kuromoji` command needs `build/libs` directory, because this is a fallback image that requires a JDK for execution.
+Need the directory structure below to run `kuromoji` command...
 
+```
+.
+├── graal
+│   └── kuromoji
+└── libs
+    └── kuromoji-cli-0.9.0-SNAPSHOT.jar
+```
 
 ## Usage
 
