@@ -1,4 +1,4 @@
-# Command Line Interface for Lucene Kuromoji
+# Command Line Interface for Atilika Kuromoji
 
 This plugin provide Command Line Interface for Atilika Kuromoji.
 
