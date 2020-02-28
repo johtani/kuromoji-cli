@@ -16,24 +16,22 @@
 
 package info.johtani.misc.cli.kuromoji;
 
+import com.atilika.kuromoji.ipadic.Token;
+import com.atilika.kuromoji.ipadic.Tokenizer;
+import info.johtani.misc.cli.kuromoji.output.AtilikaTokenInfo;
 import info.johtani.misc.cli.kuromoji.output.OutputBuilder;
-import info.johtani.misc.cli.kuromoji.output.TokenInfo;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.ja.JapaneseTokenizer;
-import org.apache.lucene.analysis.ja.tokenattributes.BaseFormAttribute;
-import org.apache.lucene.analysis.ja.tokenattributes.InflectionAttribute;
-import org.apache.lucene.analysis.ja.tokenattributes.PartOfSpeechAttribute;
-import org.apache.lucene.analysis.ja.tokenattributes.ReadingAttribute;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
-import static org.apache.lucene.analysis.ja.JapaneseTokenizer.Mode;
+import static com.atilika.kuromoji.TokenizerBase.Mode;
 import static picocli.CommandLine.Option;
 import static picocli.CommandLine.Parameters;
 
@@ -89,35 +87,12 @@ public class KuromojiCli implements Callable<Integer> {
 
     void tokenize(String input) throws IOException {
         OutputBuilder outputBuilder = OutputBuilder.Factory.create(output);
-
-        final Analyzer analyzer = new Analyzer() {
-            @Override
-            protected TokenStreamComponents createComponents(String fieldName) {
-                JapaneseTokenizer tokenizer = new JapaneseTokenizer(null, false, mode);
-                return new TokenStreamComponents(tokenizer, tokenizer);
-            }
-        };
-
-        TokenStream ts = analyzer.tokenStream("ignored", new StringReader(input));
-        CharTermAttribute cta = ts.getAttribute(CharTermAttribute.class);
-        PartOfSpeechAttribute pos = ts.getAttribute(PartOfSpeechAttribute.class);
-        ReadingAttribute reading = ts.getAttribute(ReadingAttribute.class);
-        InflectionAttribute inflection = ts.getAttribute(InflectionAttribute.class);
-        BaseFormAttribute baseForm = ts.getAttribute(BaseFormAttribute.class);
-
-        ts.reset();
-        while (ts.incrementToken()) {
-            outputBuilder.addTerm(new TokenInfo(
-                    cta.toString(),
-                    pos.getPartOfSpeech(),
-                    reading.getReading(),
-                    reading.getPronunciation(),
-                    baseForm.getBaseForm(),
-                    inflection.getInflectionType(),
-                    inflection.getInflectionForm()
-            ));
-        }
-        ts.close();
+        // TODO support several dictionaries
+        Tokenizer tokenizer = new Tokenizer.Builder().mode(mode).build();
+        List<Token> tokens = tokenizer.tokenize(input);
+        tokens.stream().forEach((token) -> {
+            outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token));
+        });
         outputBuilder.output();
     }
 
