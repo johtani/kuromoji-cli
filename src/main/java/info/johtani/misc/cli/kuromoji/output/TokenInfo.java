@@ -17,13 +17,13 @@
 package info.johtani.misc.cli.kuromoji.output;
 
 public class TokenInfo {
-    String token;
-    String pos;
-    String reading;
-    String pronunciation;
-    String baseForm;
-    String inflectionType;
-    String inflectionForm;
+    private String token;
+    private String pos;
+    private String reading;
+    private String pronunciation;
+    private String baseForm;
+    private String inflectionType;
+    private String inflectionForm;
 
     public TokenInfo(String token, String pos, String reading, String pronunciation, String baseForm,
                      String inflectionType, String inflectionForm) {
