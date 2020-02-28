@@ -41,15 +41,20 @@ public class AbstractOutputBuilderTest {
         System.setErr(originalErr);
     }
 
+
     static TokenInfo defaultTokenInfo() {
-        return new TokenInfo(
-                "test",
-                "pos",
-                "reading",
-                "pronunciation",
-                "baseForm",
-                "inflectionType",
-                "inflectionForm"
-        );
+        return new DummyTokenInfo("test");
+    }
+}
+
+class DummyTokenInfo extends TokenInfo {
+
+    public DummyTokenInfo(String token) {
+        super(token);
+    }
+
+    @Override
+    public String getAllFeatures() {
+        return "all features";
     }
 }

@@ -1,10 +1,7 @@
 # Command Line Interface for Lucene Kuromoji
 
-This plugin provide Command Line Interface for Lucene Kuromoji.
+This plugin provide Command Line Interface for Atilika Kuromoji.
 
-## Support Lucene version
-
-* 8.4.1
 
 ## Build
 
@@ -15,24 +12,11 @@ This plugin provide Command Line Interface for Lucene Kuromoji.
 
 ### Build Native Image using JDK
 
-**LIMITATION: Currently not support building stand-alone image...**
-
 ```
 ./gradle nativeImage
 ```
 
 Then, gradle builds native command `kuromoji` in `build/graal` directory.
-
-*NOTE:* `kuromoji` command needs `build/libs` directory, because this is a fallback image that requires a JDK for execution.
-Need the directory structure below to run `kuromoji` command...
-
-```
-.
-├── graal
-│   └── kuromoji
-└── libs
-    └── kuromoji-cli-0.9.0-SNAPSHOT.jar
-```
 
 ## Usage
 
@@ -46,7 +30,6 @@ Text from standard input:
 ```
 
 Also the file can be specified as a parameter.
-
 
 ```
 % kuromoji <filename>

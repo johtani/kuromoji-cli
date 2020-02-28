@@ -16,16 +16,19 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-public abstract class TokenInfo {
-    private String token;
+import com.atilika.kuromoji.TokenBase;
 
-    public TokenInfo(String token) {
+public class AtilikaTokenInfo extends TokenInfo {
+
+    private TokenBase token;
+
+    public AtilikaTokenInfo(String term, TokenBase token) {
+        super(term);
         this.token = token;
     }
 
-    public String getToken() {
-        return token;
+    @Override
+    public String getAllFeatures() {
+        return token.getAllFeatures();
     }
-
-    public abstract String getAllFeatures();
 }

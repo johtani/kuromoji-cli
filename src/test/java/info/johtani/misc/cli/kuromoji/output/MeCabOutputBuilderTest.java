@@ -26,6 +26,8 @@ public class MeCabOutputBuilderTest extends AbstractOutputBuilderTest {
         return new MeCabOutputBuilder();
     }
 
+
+
     @Test
     public void output() {
         OutputBuilder builder = createInstance();
@@ -34,27 +36,10 @@ public class MeCabOutputBuilderTest extends AbstractOutputBuilderTest {
         builder.addTerm(token);
         builder.output();
         assertEquals(token.getToken() + "\t" +
-                        String.join(",",
-                                token.getPos(),
-                                "*",
-                                "*",
-                                "*",
-                                token.getInflectionType(),
-                                token.getInflectionForm(),
-                                token.getBaseForm(),
-                                token.getReading(),
-                                token.getPronunciation()) + "\n" +
+                        token.getAllFeatures() + "\n" +
                         token.getToken() + "\t" +
-                        String.join(",",
-                                token.getPos(),
-                                "*",
-                                "*",
-                                "*",
-                                token.getInflectionType(),
-                                token.getInflectionForm(),
-                                token.getBaseForm(),
-                                token.getReading(),
-                                token.getPronunciation()) + "\n",
+                        token.getAllFeatures() + "\n" +
+                        "EOS\n",
                 outContent.toString());
     }
 }
