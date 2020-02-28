@@ -29,8 +29,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 import static org.apache.lucene.analysis.ja.JapaneseTokenizer.Mode;
@@ -39,12 +39,12 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.10.0",
+        version = "0.9.1",
         description = "CLI for Lucene Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
-    @Parameters(index = "0", description = "The input file path that contains the text for analyzing")
-    String input;
+    @Parameters(arity = "0..1", description = "The input file path that contains the text for analyzing")
+    String inputFile;
 
     @Option(names = {"-o", "--output"},
             description = "The output format. ${COMPLETION-CANDIDATES} can be specified. Default is ${DEFAULT-VALUE}"
@@ -60,6 +60,34 @@ public class KuromojiCli implements Callable<Integer> {
     public Integer call() {
         int exitCode = 0;
 
+        try {
+
+            if (inputFile != null && inputFile.isEmpty() == false) {
+                FileReader fr = new FileReader(new File(inputFile));
+                BufferedReader br = new BufferedReader(fr);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    tokenize(line);
+                }
+                br.close();
+            }
+
+            Scanner stdin = new Scanner(System.in);
+            while (stdin.hasNextLine()) {
+                String line = stdin.nextLine();
+                tokenize(line);
+            }
+
+        } catch (IOException ioe) {
+            System.err.println(ioe.getMessage());
+            ioe.printStackTrace();
+            exitCode = 1;
+        }
+
+        return exitCode;
+    }
+
+    void tokenize(String input) throws IOException {
         OutputBuilder outputBuilder = OutputBuilder.Factory.create(output);
 
         final Analyzer analyzer = new Analyzer() {
@@ -76,28 +104,21 @@ public class KuromojiCli implements Callable<Integer> {
         ReadingAttribute reading = ts.getAttribute(ReadingAttribute.class);
         InflectionAttribute inflection = ts.getAttribute(InflectionAttribute.class);
         BaseFormAttribute baseForm = ts.getAttribute(BaseFormAttribute.class);
-        try {
-            ts.reset();
-            while (ts.incrementToken()) {
-                outputBuilder.addTerm(new TokenInfo(
-                        cta.toString(),
-                        pos.getPartOfSpeech(),
-                        reading.getReading(),
-                        reading.getPronunciation(),
-                        baseForm.getBaseForm(),
-                        inflection.getInflectionType(),
-                        inflection.getInflectionForm()
-                ));
-            }
-        } catch (IOException ioe) {
-            System.err.println(ioe.getMessage());
-            ioe.printStackTrace();
-            exitCode = 1;
+
+        ts.reset();
+        while (ts.incrementToken()) {
+            outputBuilder.addTerm(new TokenInfo(
+                    cta.toString(),
+                    pos.getPartOfSpeech(),
+                    reading.getReading(),
+                    reading.getPronunciation(),
+                    baseForm.getBaseForm(),
+                    inflection.getInflectionType(),
+                    inflection.getInflectionForm()
+            ));
         }
-
+        ts.close();
         outputBuilder.output();
-
-        return exitCode;
     }
 
     public static void main(String... args) {

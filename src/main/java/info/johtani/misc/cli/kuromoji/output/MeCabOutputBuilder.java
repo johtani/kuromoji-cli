@@ -65,6 +65,7 @@ public class MeCabOutputBuilder extends OutputBuilder {
                     System.out.println(sb.toString());
                 }
         );
+        System.out.println("EOS");
     }
 
 

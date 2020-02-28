@@ -38,8 +38,18 @@ Need the directory structure below to run `kuromoji` command...
 
 ### Basic usage
 
+Text from standard input:
+
 ```
-% kuromoji 関西国際空港限定トートバッグ
+% echo "関西国際空港限定トートバッグ" | kuromoji
+関西 関西国際空港 国際 空港 限定 トートバッグ
+```
+
+Also the file can be specified as a parameter.
+
+
+```
+% kuromoji <filename>
 関西 関西国際空港 国際 空港 限定 トートバッグ
 ```
 
@@ -48,12 +58,12 @@ Need the directory structure below to run `kuromoji` command...
 `NORMAL`, `SEARCH`, `EXTENDED` can be specified. Default is `SEARCH`
 
 ```
-% kuromoji -m=NORMAL 関西国際空港限定トートバッグ
+% echo "関西国際空港限定トートバッグ" | kuromoji -m=NORMAL
 関西国際空港 限定 トートバッグ
 ```
 
 ```
-% kuromoji -m=EXTENDED 関西国際空港限定トートバッグ
+% echo "関西国際空港限定トートバッグ" | kuromoji -m=EXTENDED
 関西 国際 空港 限定 ト ー ト バ ッ グ
 ```
 
@@ -62,13 +72,14 @@ Need the directory structure below to run `kuromoji` command...
 `wakati`, `mecab` can be specified. Default is `wakati`
 
 ```
-% kuromoji -o=mecab 関西国際空港限定トートバッグ
+% echo "関西国際空港限定トートバッグ" | kuromoji -o=mecab
 関西    名詞,固有名詞,地域,一般,*,*,関西,カンサイ,カンサイ
 関西国際空港    名詞,固有名詞,組織,*,*,*,関西国際空港,カンサイコクサイクウコウ,カンサイコクサイクーコー
 国際    名詞,一般,*,*,*,*,国際,コクサイ,コクサイ
 空港    名詞,一般,*,*,*,*,空港,クウコウ,クーコー
 限定    名詞,サ変接続,*,*,*,*,限定,ゲンテイ,ゲンテイ
 トートバッグ    名詞,一般,*,*,*,*,トートバッグ,*,*
+EOS
 ```
 
 ## License
