@@ -38,7 +38,7 @@ import static picocli.CommandLine.Parameters;
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
         version = "0.9.1",
-        description = "CLI for Lucene Kuromoji"
+        description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
     @Parameters(arity = "0..1", description = "The input file path that contains the text for analyzing")
