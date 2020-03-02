@@ -39,7 +39,6 @@ Also the file can be specified as a parameter.
 ### Dictionary Type
 
 `ipadic`, `unidic`, `naist_jdic`, `jumandic`, and `unidic_kanaaccent` can be specified. Default is `ipadic`.
-This
 
 ### Tokenize mode
 
