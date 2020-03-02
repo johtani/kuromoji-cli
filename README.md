@@ -36,9 +36,15 @@ Also the file can be specified as a parameter.
 関西 関西国際空港 国際 空港 限定 トートバッグ
 ```
 
+### Dictionary Type
+
+`ipadic`, `unidic`, `naist_jdic`, `jumandic`, and `unidic_kanaaccent` can be specified. Default is `ipadic`.
+This
+
 ### Tokenize mode
 
-`NORMAL`, `SEARCH`, `EXTENDED` can be specified. Default is `SEARCH`
+`NORMAL`, `SEARCH`, `EXTENDED` can be specified. Default is `SEARCH`.
+*NOTE: This option can only use with `-d=ipadic`.*
 
 ```
 % echo "関西国際空港限定トートバッグ" | kuromoji -m=NORMAL

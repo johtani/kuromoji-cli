@@ -40,7 +40,7 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.11.0",
+        version = "0.12.0",
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {

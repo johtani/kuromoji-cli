@@ -18,9 +18,8 @@ package info.johtani.misc.cli.kuromoji.tokanizer;
 
 public enum DictionaryType {
     ipadic,
-    ipadic_neologd,
     jumandic,
     naist_jdic,
     unidic,
-    unidic_neologd
+    unidic_kanaaccent
 }

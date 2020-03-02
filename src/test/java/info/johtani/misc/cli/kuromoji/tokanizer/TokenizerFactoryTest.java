@@ -35,4 +35,22 @@ public class TokenizerFactoryTest {
         Object obj = TokenizerFactory.create(DictionaryType.unidic, TokenizerBase.Mode.NORMAL);
         assertThat(obj, instanceOf(com.atilika.kuromoji.unidic.Tokenizer.class));
     }
+
+    @Test
+    public void createUnidicKanaaccent() {
+        Object obj = TokenizerFactory.create(DictionaryType.unidic_kanaaccent, TokenizerBase.Mode.NORMAL);
+        assertThat(obj, instanceOf(com.atilika.kuromoji.unidic.kanaaccent.Tokenizer.class));
+    }
+
+    @Test
+    public void createJumandic() {
+        Object obj = TokenizerFactory.create(DictionaryType.jumandic, TokenizerBase.Mode.NORMAL);
+        assertThat(obj, instanceOf(com.atilika.kuromoji.jumandic.Tokenizer.class));
+    }
+
+    @Test
+    public void createNaistjdic() {
+        Object obj = TokenizerFactory.create(DictionaryType.naist_jdic, TokenizerBase.Mode.NORMAL);
+        assertThat(obj, instanceOf(com.atilika.kuromoji.naist.jdic.Tokenizer.class));
+    }
 }

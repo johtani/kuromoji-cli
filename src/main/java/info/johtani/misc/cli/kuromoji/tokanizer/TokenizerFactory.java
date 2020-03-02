@@ -29,6 +29,16 @@ public interface TokenizerFactory {
                 break;
             case unidic:
                 tokenizer = new com.atilika.kuromoji.unidic.Tokenizer.Builder().build();
+                break;
+            case jumandic:
+                tokenizer = new com.atilika.kuromoji.jumandic.Tokenizer.Builder().build();
+                break;
+            case naist_jdic:
+                tokenizer = new com.atilika.kuromoji.naist.jdic.Tokenizer.Builder().build();
+                break;
+            case unidic_kanaaccent:
+                tokenizer = new com.atilika.kuromoji.unidic.kanaaccent.Tokenizer.Builder().build();
+                break;
         }
         return tokenizer;
     }
