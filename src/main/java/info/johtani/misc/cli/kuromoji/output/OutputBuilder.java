@@ -16,8 +16,6 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import info.johtani.misc.cli.kuromoji.Output;
-
 import java.util.ArrayList;
 import java.util.List;
 

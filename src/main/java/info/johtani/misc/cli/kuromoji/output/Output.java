@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package info.johtani.misc.cli.kuromoji;
+package info.johtani.misc.cli.kuromoji.output;
 
 public enum Output { mecab, wakati, json}

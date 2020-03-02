@@ -19,6 +19,7 @@ package info.johtani.misc.cli.kuromoji;
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 import info.johtani.misc.cli.kuromoji.output.AtilikaTokenInfo;
+import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.output.OutputBuilder;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;

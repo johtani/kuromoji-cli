@@ -16,7 +16,6 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import info.johtani.misc.cli.kuromoji.Output;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
