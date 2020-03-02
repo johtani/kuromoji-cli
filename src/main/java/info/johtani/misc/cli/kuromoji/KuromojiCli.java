@@ -16,11 +16,13 @@
 
 package info.johtani.misc.cli.kuromoji;
 
-import com.atilika.kuromoji.ipadic.Token;
-import com.atilika.kuromoji.ipadic.Tokenizer;
+import com.atilika.kuromoji.TokenBase;
+import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.AtilikaTokenInfo;
 import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.output.OutputBuilder;
+import info.johtani.misc.cli.kuromoji.tokanizer.DictionaryType;
+import info.johtani.misc.cli.kuromoji.tokanizer.TokenizerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -38,7 +40,7 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.9.1",
+        version = "0.11.0",
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
@@ -55,18 +57,21 @@ public class KuromojiCli implements Callable<Integer> {
     )
     Mode mode = Mode.SEARCH;
 
+    @Option(names = {"-d", "--dictionary"},
+            description = "The dictionary of tokenizer. ${COMPLETION-CANDIDATES} can be specified. Default is ${DEFAULT-VALUE}"
+    )
+    DictionaryType dictType = DictionaryType.ipadic;
+
     @Override
     public Integer call() {
         int exitCode = 0;
-
         try {
-
             if (inputFile != null && inputFile.isEmpty() == false) {
                 FileReader fr = new FileReader(new File(inputFile));
                 BufferedReader br = new BufferedReader(fr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    tokenize(line);
+                    tokenize(line, output, dictType, mode);
                 }
                 br.close();
             }
@@ -74,23 +79,21 @@ public class KuromojiCli implements Callable<Integer> {
             Scanner stdin = new Scanner(System.in);
             while (stdin.hasNextLine()) {
                 String line = stdin.nextLine();
-                tokenize(line);
+                tokenize(line, output, dictType, mode);
             }
-
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
             ioe.printStackTrace();
             exitCode = 1;
         }
-
         return exitCode;
     }
 
-    void tokenize(String input) throws IOException {
+    void tokenize(String input, Output output, DictionaryType dictType, Mode mode) throws IOException {
         OutputBuilder outputBuilder = OutputBuilder.Factory.create(output);
         // TODO support several dictionaries
-        Tokenizer tokenizer = new Tokenizer.Builder().mode(mode).build();
-        List<Token> tokens = tokenizer.tokenize(input);
+        TokenizerBase tokenizer = TokenizerFactory.create(dictType, mode);
+        List<TokenBase> tokens = (List<TokenBase>) tokenizer.tokenize(input);
         tokens.stream().forEach((token) -> {
             outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token));
         });

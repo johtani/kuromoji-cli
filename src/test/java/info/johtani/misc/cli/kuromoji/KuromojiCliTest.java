@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package info.johtani.misc.cli.kuromoji.output;
+package info.johtani.misc.cli.kuromoji;
 
+import com.atilika.kuromoji.TokenizerBase;
+import info.johtani.misc.cli.kuromoji.output.Output;
+import info.johtani.misc.cli.kuromoji.tokanizer.DictionaryType;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
-public class AbstractOutputBuilderTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class KuromojiCliTest {
 
     final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
@@ -33,20 +41,22 @@ public class AbstractOutputBuilderTest {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
-
-    static TokenInfo defaultTokenInfo() {
-        return new DummyTokenInfo("test");
-    }
-}
-
-class DummyTokenInfo extends TokenInfo {
-
-    public DummyTokenInfo(String token) {
-        super(token);
+    String getDefaultString() {
+        return "自転車を漕ぐ";
     }
 
-    @Override
-    public String getAllFeatures() {
-        return "all features";
+    String getExpectedTokens() {
+        return "自転車 を 漕ぐ\n";
+    }
+
+    @Test
+    public void tokenize() {
+        KuromojiCli target = new KuromojiCli();
+        try {
+            target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
+        } catch (IOException ioe) {
+            fail();
+        }
+        assertEquals(getExpectedTokens(), outContent.toString());
     }
 }

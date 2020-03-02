@@ -45,5 +45,4 @@ public class WakatiOutputBuilderTest extends AbstractOutputBuilderTest{
         assertEquals(token.getToken() + " " + token.getToken() + "\n",
                 outContent.toString());
     }
-
 }
