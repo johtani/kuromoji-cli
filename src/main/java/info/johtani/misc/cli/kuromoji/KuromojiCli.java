@@ -40,7 +40,7 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.12.0",
+        version = "0.20.0",
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
@@ -89,14 +89,12 @@ public class KuromojiCli implements Callable<Integer> {
         return exitCode;
     }
 
-    void tokenize(String input, Output output, DictionaryType dictType, Mode mode) throws IOException {
+    void tokenize(String input, Output output, DictionaryType dictType, Mode mode){
         OutputBuilder outputBuilder = OutputBuilder.Factory.create(output);
         // TODO support several dictionaries
         TokenizerBase tokenizer = TokenizerFactory.create(dictType, mode);
         List<TokenBase> tokens = (List<TokenBase>) tokenizer.tokenize(input);
-        tokens.stream().forEach((token) -> {
-            outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token));
-        });
+        tokens.forEach((token) -> outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token)));
         outputBuilder.output();
     }
 
