@@ -33,6 +33,9 @@ public abstract class OutputBuilder {
                 case mecab:
                     builder = new MeCabOutputBuilder();
                     break;
+                case json:
+                    builder = new JSONOutputBuilder();
+                    break;
             }
             return builder;
         }

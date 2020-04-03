@@ -23,11 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class KuromojiCliTest {
 
@@ -52,11 +50,7 @@ public class KuromojiCliTest {
     @Test
     public void tokenize() {
         KuromojiCli target = new KuromojiCli();
-        try {
-            target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
-        } catch (IOException ioe) {
-            fail();
-        }
+        target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
         assertEquals(getExpectedTokens(), outContent.toString());
     }
 }

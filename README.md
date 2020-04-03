@@ -13,7 +13,7 @@ This plugin provide Command Line Interface for Atilika Kuromoji.
 ### Build Native Image using JDK
 
 ```
-./gradle nativeImage
+./gradlew nativeImage
 ```
 
 Then, gradle builds native command `kuromoji` in `build/graal` directory.
@@ -57,7 +57,7 @@ Also the file can be specified as a parameter.
 
 ### Output format
 
-`wakati`, `mecab` can be specified. Default is `wakati`
+`wakati`, `mecab`, and `json` can be specified. Default is `wakati`
 
 ```
 % echo "関西国際空港限定トートバッグ" | kuromoji -o=mecab
