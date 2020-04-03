@@ -47,6 +47,6 @@ class DummyTokenInfo extends TokenInfo {
 
     @Override
     public String getAllFeatures() {
-        return "all features";
+        return "all,features";
     }
 }

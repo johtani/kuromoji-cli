@@ -13,7 +13,7 @@ This plugin provide Command Line Interface for Atilika Kuromoji.
 ### Build Native Image using JDK
 
 ```
-./gradle nativeImage
+./gradlew nativeImage
 ```
 
 Then, gradle builds native command `kuromoji` in `build/graal` directory.

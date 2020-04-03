@@ -43,8 +43,8 @@ public class JSONOutputBuilder extends OutputBuilder {
     }
 
     private String addAllFeatures(StringBuilder sb, TokenInfo token) {
-        StringJoiner sj = new StringJoiner(","+ System.lineSeparator(), "      \"", "\"");
-        Arrays.stream(token.getAllFeatures().split(",")).forEach(sj::add);
+        StringJoiner sj = new StringJoiner("," + System.lineSeparator());
+        Arrays.stream(token.getAllFeatures().split(",")).forEach(s -> sj.add("      \"" + s + "\""));
         return sj.toString();
     }
 }

@@ -26,6 +26,8 @@ public class JSONOutputBuilderTest extends AbstractOutputBuilderTest {
         return new JSONOutputBuilder();
     }
 
+
+
     @Test
     public void output() {
         OutputBuilder builder = createInstance();
@@ -38,13 +40,15 @@ public class JSONOutputBuilderTest extends AbstractOutputBuilderTest {
                         "  {" + System.lineSeparator() +
                         "    \"text\": \"test\"," + System.lineSeparator() +
                         "    \"detail\": [" + System.lineSeparator() +
-                        "      \"all features\"" + System.lineSeparator() +
+                        "      \"all\"," + System.lineSeparator() +
+                        "      \"features\"" + System.lineSeparator() +
                         "    ]" + System.lineSeparator() +
                         "  }," + System.lineSeparator() +
                         "  {" + System.lineSeparator() +
                         "    \"text\": \"test\"," + System.lineSeparator() +
                         "    \"detail\": [" + System.lineSeparator() +
-                        "      \"all features\"" + System.lineSeparator() +
+                        "      \"all\"," + System.lineSeparator() +
+                        "      \"features\"" + System.lineSeparator() +
                         "    ]" + System.lineSeparator() +
                         "  }" + System.lineSeparator() +
                         "]" + System.lineSeparator()
