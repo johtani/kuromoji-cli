@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class MeCabOutputBuilderTest extends AbstractOutputBuilderTest {
 
     static MeCabOutputBuilder createInstance() {
-        return new MeCabOutputBuilder();
+        return new MeCabOutputBuilder(System.out);
     }
 
 

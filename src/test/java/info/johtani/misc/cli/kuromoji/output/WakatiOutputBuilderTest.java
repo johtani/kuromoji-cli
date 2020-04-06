@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class WakatiOutputBuilderTest extends AbstractOutputBuilderTest{
 
     static WakatiOutputBuilder createInstance() {
-        return new WakatiOutputBuilder();
+        return new WakatiOutputBuilder(System.out);
     }
 
     @Test

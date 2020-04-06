@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 public class JSONOutputBuilderTest extends AbstractOutputBuilderTest {
 
     static JSONOutputBuilder createInstance() {
-        return new JSONOutputBuilder();
+        return new JSONOutputBuilder(System.out);
     }
 
 
