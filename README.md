@@ -72,7 +72,7 @@ EOS
 
 ### Output Viterbi lattice as a DOT format file
 
-Kuromoji allow to output Viterbi lattice and path as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language) format.
+Kuromoji allow to output Viterbi lattice and path as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) format.
 This is debug purpose, but it is helpful to understand token outputs.
 The output DOT file name is specified with `-v` or `--viterbi`.  
 
