@@ -26,10 +26,7 @@ import info.johtani.misc.cli.kuromoji.tokanizer.TokenizerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -40,7 +37,7 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.20.0",
+        version = "0.30.0",
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
@@ -61,6 +58,12 @@ public class KuromojiCli implements Callable<Integer> {
             description = "The dictionary of tokenizer. ${COMPLETION-CANDIDATES} can be specified. Default is ${DEFAULT-VALUE}"
     )
     DictionaryType dictType = DictionaryType.ipadic;
+
+    @Option(names = {"-v", "--viterbi"},
+            paramLabel = "VITERBI_FILE",
+            description = "The output viterbi lattice as DOT format."
+    )
+    String viterbiFile;
 
     @Override
     public Integer call() {
@@ -96,6 +99,18 @@ public class KuromojiCli implements Callable<Integer> {
         List<TokenBase> tokens = (List<TokenBase>) tokenizer.tokenize(input);
         tokens.forEach((token) -> outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token)));
         outputBuilder.output();
+        if (viterbiFile != null && viterbiFile.isEmpty() == false) {
+            try (FileOutputStream fos = new FileOutputStream(viterbiFile)) {
+                tokenizer.debugTokenize(fos, input);
+                fos.flush();
+            } catch (FileNotFoundException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String... args) {

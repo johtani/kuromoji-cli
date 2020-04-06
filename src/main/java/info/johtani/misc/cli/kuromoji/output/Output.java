@@ -16,4 +16,8 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-public enum Output { mecab, wakati, json}
+public enum Output {
+    mecab,
+    wakati,
+    json
+}
