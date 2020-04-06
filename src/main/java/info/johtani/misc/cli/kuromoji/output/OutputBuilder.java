@@ -16,29 +16,37 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OutputBuilder {
 
     List<TokenInfo> tokenList = new ArrayList<>();
+    PrintStream out;
 
     public static class Factory {
-        public static OutputBuilder create(Output output) {
+        public static OutputBuilder create(Output output, PrintStream out) {
             OutputBuilder builder = null;
             switch (output) {
                 case wakati:
-                    builder = new WakatiOutputBuilder();
+                    builder = new WakatiOutputBuilder(out);
                     break;
                 case mecab:
-                    builder = new MeCabOutputBuilder();
+                    builder = new MeCabOutputBuilder(out);
                     break;
                 case json:
-                    builder = new JSONOutputBuilder();
+                    builder = new JSONOutputBuilder(out);
                     break;
             }
             return builder;
         }
+    }
+
+    private OutputBuilder() {}
+
+    public OutputBuilder(PrintStream out) {
+        this.out = out;
     }
 
     public void addTerm(TokenInfo tokenInfo) {

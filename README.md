@@ -74,18 +74,19 @@ EOS
 
 Kuromoji allow to output Viterbi lattice and path as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) format.
 This is debug purpose, but it is helpful to understand token outputs.
-The output DOT file name is specified with `-v` or `--viterbi`.  
+If `-v` or `--viterbi` option is specified, **the command outputs DOT file to stdout and outputs tokens to stderr.** 
 
-```
-% echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v viterbi.dot
+```sh
+% echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v > viterbi.dot
 ```
 
 #### Show dot file 
 
 [Graphviz](http://www.graphviz.org/) is needed to convert DOT file to image file.
 Run the below command, then output PNG file.
-```
-% dot -Tpng viterbi.dot -oviterbi.png
+
+```sh
+% echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v | dot -Tpng -oviterbi.png
 ```
 
 ## License

@@ -16,8 +16,13 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import java.io.PrintStream;
+
 public class MeCabOutputBuilder extends OutputBuilder {
 
+    public MeCabOutputBuilder(PrintStream out) {
+        super(out);
+    }
 
     @Override
     public void output() {
@@ -26,10 +31,10 @@ public class MeCabOutputBuilder extends OutputBuilder {
                     //FIXME need change output
                     StringBuilder sb = new StringBuilder(token.getToken() + "\t");
                     sb.append(token.getAllFeatures());
-                    System.out.println(sb.toString());
+                    super.out.println(sb.toString());
                 }
         );
-        System.out.println("EOS");
+        super.out.println("EOS");
     }
 
 

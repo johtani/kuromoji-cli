@@ -16,14 +16,19 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
 public class JSONOutputBuilder extends OutputBuilder {
 
+    public JSONOutputBuilder(PrintStream out) {
+        super(out);
+    }
+
     @Override
     public void output() {
-        System.out.println("[");
+        super.out.println("[");
         StringJoiner sj = new StringJoiner("," + System.lineSeparator());
         tokenList.forEach(
                 (TokenInfo token) -> {
@@ -38,8 +43,8 @@ public class JSONOutputBuilder extends OutputBuilder {
                     sj.add(sb.toString());
                 }
         );
-        System.out.println(sj.toString());
-        System.out.println("]");
+        super.out.println(sj.toString());
+        super.out.println("]");
     }
 
     private String addAllFeatures(StringBuilder sb, TokenInfo token) {

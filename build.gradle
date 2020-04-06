@@ -13,7 +13,7 @@ application {
 }
 
 group 'info.johtani.misc.cli'
-version '0.30.0'
+version '0.31.0'
 description "Kuromoji CLI"
 
 sourceCompatibility = 8

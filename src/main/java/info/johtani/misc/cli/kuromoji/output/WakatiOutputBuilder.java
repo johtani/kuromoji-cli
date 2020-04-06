@@ -16,15 +16,20 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import java.io.PrintStream;
 import java.util.StringJoiner;
 
 public class WakatiOutputBuilder extends OutputBuilder {
+    public WakatiOutputBuilder(PrintStream out) {
+        super(out);
+    }
+
     @Override
     public void output() {
         StringJoiner joiner = new StringJoiner(" ");
         tokenList.forEach(
                 (TokenInfo token) -> joiner.add(token.getToken())
         );
-        System.out.println(joiner.toString());
+        super.out.println(joiner.toString());
     }
 }

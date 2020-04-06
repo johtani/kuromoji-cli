@@ -37,7 +37,7 @@ import static picocli.CommandLine.Parameters;
 
 @Command(name = "kuromoji",
         mixinStandardHelpOptions = true,
-        version = "0.30.0",
+        version = "0.31.0",
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
@@ -60,10 +60,10 @@ public class KuromojiCli implements Callable<Integer> {
     DictionaryType dictType = DictionaryType.ipadic;
 
     @Option(names = {"-v", "--viterbi"},
-            paramLabel = "VITERBI_FILE",
-            description = "The output viterbi lattice as DOT format."
+            defaultValue = "false",
+            description = "The output viterbi lattice as DOT format to stdout. And token list is output as stderr"
     )
-    String viterbiFile;
+    boolean outputViterbi = false;
 
     @Override
     public Integer call() {
@@ -93,19 +93,20 @@ public class KuromojiCli implements Callable<Integer> {
     }
 
     void tokenize(String input, Output output, DictionaryType dictType, Mode mode){
-        OutputBuilder outputBuilder = OutputBuilder.Factory.create(output);
+        PrintStream outputStream = System.out;
+        if (outputViterbi) {
+            outputStream = System.err;
+        }
+
+        OutputBuilder outputBuilder = OutputBuilder.Factory.create(output, outputStream);
         // TODO support several dictionaries
         TokenizerBase tokenizer = TokenizerFactory.create(dictType, mode);
         List<TokenBase> tokens = (List<TokenBase>) tokenizer.tokenize(input);
         tokens.forEach((token) -> outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token)));
         outputBuilder.output();
-        if (viterbiFile != null && viterbiFile.isEmpty() == false) {
-            try (FileOutputStream fos = new FileOutputStream(viterbiFile)) {
-                tokenizer.debugTokenize(fos, input);
-                fos.flush();
-            } catch (FileNotFoundException e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
+        if (outputViterbi) {
+            try {
+                tokenizer.debugTokenize(System.out, input);
             } catch (IOException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
