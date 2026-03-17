@@ -89,6 +89,11 @@ Run the below command, then output PNG file.
 % echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v | dot -Tpng -oviterbi.png
 ```
 
+If use MacOS, one line command is below: 
+```sh
+% echo "春眠暁を覚えず" | build/graal/kuromoji -v -o json | dot -Tpng | open -f -a preview.app
+```
+
 ## License
 
 Apache License 2.0

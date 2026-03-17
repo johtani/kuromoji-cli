@@ -40,17 +40,17 @@ public class KuromojiCliTest {
         System.setErr(new PrintStream(errContent));
     }
     String getDefaultString() {
-        return "自転車を漕ぐ";
+        return "早稲田大学";
     }
 
     String getExpectedTokens() {
-        return "自転車 を 漕ぐ\n";
+        return "早稲田 早稲田大学 大学\r\n";
     }
 
     @Test
     public void tokenize() {
         KuromojiCli target = new KuromojiCli();
-        target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
+        target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.EXTENDED);
         assertEquals(getExpectedTokens(), outContent.toString());
     }
 }
