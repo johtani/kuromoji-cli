@@ -16,9 +16,9 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WakatiOutputBuilderTest extends AbstractOutputBuilderTest{
 
@@ -42,7 +42,7 @@ public class WakatiOutputBuilderTest extends AbstractOutputBuilderTest{
         builder.addTerm(token);
         builder.addTerm(token);
         builder.output();
-        assertEquals(token.getToken() + " " + token.getToken() + "\n",
+        assertEquals(token.getToken() + " " + token.getToken() + System.lineSeparator(),
                 outContent.toString());
     }
 }

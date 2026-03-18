@@ -19,13 +19,13 @@ package info.johtani.misc.cli.kuromoji;
 import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.tokanizer.DictionaryType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class KuromojiCliTest {
 
@@ -34,23 +34,23 @@ public class KuromojiCliTest {
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
 
-    @Before
+    @BeforeEach
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
     String getDefaultString() {
-        return "自転車を漕ぐ";
+        return "早稲田大学";
     }
 
     String getExpectedTokens() {
-        return "自転車 を 漕ぐ\n";
+        return "早稲田大学" + System.lineSeparator();
     }
 
     @Test
     public void tokenize() {
         KuromojiCli target = new KuromojiCli();
-        target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
+        target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.EXTENDED);
         assertEquals(getExpectedTokens(), outContent.toString());
     }
 }

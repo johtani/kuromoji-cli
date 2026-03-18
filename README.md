@@ -7,8 +7,8 @@ This plugin provide Command Line Interface for Atilika Kuromoji.
 
 ### Requirements
 
-* Gradle >= 6.0.1
-* GraalVM >= java11-19.3.0 or JDK >= 1.8
+* JDK >= 17
+* Gradle Wrapper (`./gradlew`) を利用
 
 ### Build Native Image using JDK
 
@@ -87,6 +87,11 @@ Run the below command, then output PNG file.
 
 ```sh
 % echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v | dot -Tpng -oviterbi.png
+```
+
+If use MacOS, one line command is below: 
+```sh
+% echo "春眠暁を覚えず" | build/graal/kuromoji -v -o json | dot -Tpng | open -f -a preview.app
 ```
 
 ## License

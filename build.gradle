@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id "com.palantir.graal" version "0.6.0-102-ga30de19"
+    id 'org.graalvm.buildtools.native' version '0.10.6'
 }
 
 repositories {
@@ -9,45 +9,63 @@ repositories {
 }
 
 application {
-    mainClassName = 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+    mainClass = 'info.johtani.misc.cli.kuromoji.KuromojiCli'
 }
 
 group 'info.johtani.misc.cli'
 version '0.31.0'
 description "Kuromoji CLI"
 
-sourceCompatibility = 8
-configurations {
-    generateConfig
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 dependencies {
-    compile "com.atilika.kuromoji:kuromoji-ipadic:${kuromojiVersion}"
-    compile "com.atilika.kuromoji:kuromoji-unidic:${kuromojiVersion}"
-    compile "com.atilika.kuromoji:kuromoji-unidic-kanaaccent:${kuromojiVersion}"
-    compile "com.atilika.kuromoji:kuromoji-jumandic:${kuromojiVersion}"
-    compile "com.atilika.kuromoji:kuromoji-naist-jdic:${kuromojiVersion}"
-    compile 'info.picocli:picocli:4.2.0'
-    annotationProcessor 'info.picocli:picocli-codegen:4.2.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "com.atilika.kuromoji:kuromoji-ipadic:${kuromojiVersion}"
+    implementation "com.atilika.kuromoji:kuromoji-unidic:${kuromojiVersion}"
+    implementation "com.atilika.kuromoji:kuromoji-unidic-kanaaccent:${kuromojiVersion}"
+    implementation "com.atilika.kuromoji:kuromoji-jumandic:${kuromojiVersion}"
+    implementation "com.atilika.kuromoji:kuromoji-naist-jdic:${kuromojiVersion}"
+    implementation 'info.picocli:picocli:4.7.7'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-compileJava {
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
     //for kuromoji dictionaries
     options.compilerArgs += [
             "-Aother.resource.patterns=.*.bin"
     ]
 }
 
+test {
+    useJUnitPlatform()
+}
+
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes 'Main-Class': 'info.johtani.misc.cli.kuromoji.KuromojiCli'
     }
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
-graal {
-    mainClass 'info.johtani.misc.cli.kuromoji.KuromojiCli'
-    outputName 'kuromoji'
-    graalVersion '19.2.0'
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'kuromoji'
+            mainClass = 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+        }
+    }
+}
+
+tasks.register('nativeImage') {
+    dependsOn tasks.named('nativeCompile')
 }
