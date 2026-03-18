@@ -83,21 +83,27 @@ public class KuromojiCliTest {
     @Test
     public void callWithInputFileShouldIgnoreStdin() throws IOException {
         Path inputPath = Files.createTempFile("kuromoji-cli-", ".txt");
-        Files.writeString(inputPath, "東京都", StandardCharsets.UTF_8);
-        System.setIn(new ByteArrayInputStream("京都府\n".getBytes(StandardCharsets.UTF_8)));
+        try {
+            Files.writeString(inputPath, "東京都", StandardCharsets.UTF_8);
+            System.setIn(new ByteArrayInputStream("京都府\n".getBytes(StandardCharsets.UTF_8)));
 
-        KuromojiCli target = new KuromojiCli();
-        target.inputFile = inputPath.toString();
-        target.output = Output.wakati;
-        target.dictType = DictionaryType.ipadic;
-        target.mode = TokenizerBase.Mode.EXTENDED;
+            KuromojiCli target = new KuromojiCli();
+            target.inputFile = inputPath.toString();
+            target.output = Output.wakati;
+            target.dictType = DictionaryType.ipadic;
+            target.mode = TokenizerBase.Mode.EXTENDED;
 
-        int exitCode = target.call();
-        String output = outContent.toString(StandardCharsets.UTF_8);
-        Files.deleteIfExists(inputPath);
+            int exitCode = target.call();
+            String output = outContent.toString(StandardCharsets.UTF_8).trim();
+            Set<String> tokens = Stream.of(output.split("\\s+"))
+                    .filter(token -> token.isEmpty() == false)
+                    .collect(Collectors.toSet());
 
-        assertEquals(0, exitCode);
-        assertTrue(output.contains("東京"));
-        assertFalse(output.contains("京都"));
+            assertEquals(0, exitCode);
+            assertTrue(tokens.contains("東京") || tokens.contains("東京都"));
+            assertFalse(tokens.contains("京都") || tokens.contains("京都府"));
+        } finally {
+            Files.deleteIfExists(inputPath);
+        }
     }
 }
