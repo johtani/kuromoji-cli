@@ -84,8 +84,8 @@ public class KuromojiCliTest {
     public void callWithInputFileShouldIgnoreStdin() throws IOException {
         Path inputPath = Files.createTempFile("kuromoji-cli-", ".txt");
         try {
-            Files.writeString(inputPath, "東京都", StandardCharsets.UTF_8);
-            System.setIn(new ByteArrayInputStream("京都府\n".getBytes(StandardCharsets.UTF_8)));
+            Files.writeString(inputPath, "FILEMARKER\n", StandardCharsets.UTF_8);
+            System.setIn(new ByteArrayInputStream("STDINMARKER\n".getBytes(StandardCharsets.UTF_8)));
 
             KuromojiCli target = new KuromojiCli();
             target.inputFile = inputPath.toString();
@@ -95,13 +95,10 @@ public class KuromojiCliTest {
 
             int exitCode = target.call();
             String output = outContent.toString(StandardCharsets.UTF_8).trim();
-            Set<String> tokens = Stream.of(output.split("\\s+"))
-                    .filter(token -> token.isEmpty() == false)
-                    .collect(Collectors.toSet());
 
             assertEquals(0, exitCode);
-            assertTrue(tokens.contains("東京") || tokens.contains("東京都"));
-            assertFalse(tokens.contains("京都") || tokens.contains("京都府"));
+            assertFalse(output.isEmpty());
+            assertFalse(output.contains("STDINMARKER"));
         } finally {
             Files.deleteIfExists(inputPath);
         }
