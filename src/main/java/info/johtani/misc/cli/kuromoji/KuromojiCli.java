@@ -21,8 +21,8 @@ import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.AtilikaTokenInfo;
 import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.output.OutputBuilder;
-import info.johtani.misc.cli.kuromoji.tokanizer.DictionaryType;
-import info.johtani.misc.cli.kuromoji.tokanizer.TokenizerFactory;
+import info.johtani.misc.cli.kuromoji.tokenizer.DictionaryType;
+import info.johtani.misc.cli.kuromoji.tokenizer.TokenizerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 

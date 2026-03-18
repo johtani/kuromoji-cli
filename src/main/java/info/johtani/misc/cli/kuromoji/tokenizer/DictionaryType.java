@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package info.johtani.misc.cli.kuromoji.tokanizer;
+package info.johtani.misc.cli.kuromoji.tokenizer;
 
 public enum DictionaryType {
     ipadic,
