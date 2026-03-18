@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,8 +37,8 @@ public class KuromojiCliTest {
 
     @BeforeEach
     public void setUpStreams() {
-        System.setOut(new PrintStream(outContent));
-        System.setErr(new PrintStream(errContent));
+        System.setOut(new PrintStream(outContent, true, StandardCharsets.UTF_8));
+        System.setErr(new PrintStream(errContent, true, StandardCharsets.UTF_8));
     }
     String getDefaultString() {
         return "早稲田大学";
@@ -51,6 +52,6 @@ public class KuromojiCliTest {
     public void tokenize() {
         KuromojiCli target = new KuromojiCli();
         target.tokenize(getDefaultString(), Output.wakati, DictionaryType.ipadic, TokenizerBase.Mode.EXTENDED);
-        assertEquals(getExpectedTokens(), outContent.toString());
+        assertEquals(getExpectedTokens(), outContent.toString(StandardCharsets.UTF_8));
     }
 }
