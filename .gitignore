@@ -2,3 +2,5 @@
 /.gradle/
 .idea
 build
+viz.dot
+viterbi.png
