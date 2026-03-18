@@ -26,7 +26,10 @@ import info.johtani.misc.cli.kuromoji.tokenizer.TokenizerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -70,19 +73,19 @@ public class KuromojiCli implements Callable<Integer> {
         int exitCode = 0;
         try {
             if (inputFile != null && inputFile.isEmpty() == false) {
-                FileReader fr = new FileReader(new File(inputFile));
-                BufferedReader br = new BufferedReader(fr);
-                String line;
-                while ((line = br.readLine()) != null) {
-                    tokenize(line, output, dictType, mode);
+                try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile))) {
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        tokenize(line, output, dictType, mode);
+                    }
                 }
-                br.close();
             }
 
-            Scanner stdin = new Scanner(System.in);
-            while (stdin.hasNextLine()) {
-                String line = stdin.nextLine();
-                tokenize(line, output, dictType, mode);
+            try (Scanner stdin = new Scanner(System.in)) {
+                while (stdin.hasNextLine()) {
+                    String line = stdin.nextLine();
+                    tokenize(line, output, dictType, mode);
+                }
             }
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
@@ -101,8 +104,12 @@ public class KuromojiCli implements Callable<Integer> {
         OutputBuilder outputBuilder = OutputBuilder.Factory.create(output, outputStream);
         // TODO support several dictionaries
         TokenizerBase tokenizer = TokenizerFactory.create(dictType, mode);
-        List<TokenBase> tokens = (List<TokenBase>) tokenizer.tokenize(input);
-        tokens.forEach((token) -> outputBuilder.addTerm(new AtilikaTokenInfo(token.getSurface(), token)));
+        List<?> tokens = tokenizer.tokenize(input);
+        for (Object token : tokens) {
+            if (token instanceof TokenBase tokenBase) {
+                outputBuilder.addTerm(new AtilikaTokenInfo(tokenBase.getSurface(), tokenBase));
+            }
+        }
         outputBuilder.output();
         if (outputViterbi) {
             try {

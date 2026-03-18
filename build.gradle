@@ -40,6 +40,7 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     //for kuromoji dictionaries
     options.compilerArgs += [
+            "-Xlint:unchecked",
             "-Aother.resource.patterns=.*.bin"
     ]
 }
