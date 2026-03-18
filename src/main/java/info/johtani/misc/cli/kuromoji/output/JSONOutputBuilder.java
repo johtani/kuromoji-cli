@@ -16,11 +16,16 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.StringJoiner;
+import java.util.List;
+import java.util.Map;
 
 public class JSONOutputBuilder extends OutputBuilder {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public JSONOutputBuilder(PrintStream out) {
         super(out);
@@ -28,28 +33,20 @@ public class JSONOutputBuilder extends OutputBuilder {
 
     @Override
     public void output() {
-        super.out.println("[");
-        StringJoiner sj = new StringJoiner("," + System.lineSeparator());
-        tokenList.forEach(
-                (TokenInfo token) -> {
-                    StringBuilder sb = new StringBuilder("  {");
-                    sb.append(System.lineSeparator());
-                    sb.append("    \"text\": ");
-                    sb.append("\"").append(token.getToken()).append("\",").append(System.lineSeparator());
-                    sb.append("    \"detail\": [").append(System.lineSeparator());
-                    sb.append(addAllFeatures(sb, token)).append(System.lineSeparator());
-                    sb.append("    ]").append(System.lineSeparator());
-                    sb.append("  }");
-                    sj.add(sb.toString());
-                }
-        );
-        super.out.println(sj.toString());
-        super.out.println("]");
+        try {
+            List<Map<String, Object>> tokens = tokenList.stream()
+                    .map(this::toJsonToken)
+                    .toList();
+            super.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(tokens));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to serialize tokens as JSON.", e);
+        }
     }
 
-    private String addAllFeatures(StringBuilder sb, TokenInfo token) {
-        StringJoiner sj = new StringJoiner("," + System.lineSeparator());
-        Arrays.stream(token.getAllFeatures().split(",")).forEach(s -> sj.add("      \"" + s + "\""));
-        return sj.toString();
+    private Map<String, Object> toJsonToken(TokenInfo token) {
+        return Map.of(
+                "text", token.getToken(),
+                "detail", Arrays.asList(token.getAllFeatures().split(","))
+        );
     }
 }

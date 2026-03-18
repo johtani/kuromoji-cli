@@ -16,45 +16,66 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JSONOutputBuilderTest extends AbstractOutputBuilderTest {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static JSONOutputBuilder createInstance() {
         return new JSONOutputBuilder(System.out);
     }
 
-
-
     @Test
-    public void output() {
+    public void output() throws Exception {
         OutputBuilder builder = createInstance();
         TokenInfo token = defaultTokenInfo();
         builder.addTerm(token);
         builder.addTerm(token);
         builder.output();
-        assertEquals(
-                "[" + System.lineSeparator() +
-                        "  {" + System.lineSeparator() +
-                        "    \"text\": \"test\"," + System.lineSeparator() +
-                        "    \"detail\": [" + System.lineSeparator() +
-                        "      \"all\"," + System.lineSeparator() +
-                        "      \"features\"" + System.lineSeparator() +
-                        "    ]" + System.lineSeparator() +
-                        "  }," + System.lineSeparator() +
-                        "  {" + System.lineSeparator() +
-                        "    \"text\": \"test\"," + System.lineSeparator() +
-                        "    \"detail\": [" + System.lineSeparator() +
-                        "      \"all\"," + System.lineSeparator() +
-                        "      \"features\"" + System.lineSeparator() +
-                        "    ]" + System.lineSeparator() +
-                        "  }" + System.lineSeparator() +
-                        "]" + System.lineSeparator()
-                ,
-                outContent.toString()
-        );
+
+        List<Map<String, Object>> actual = parseOutput(outContent.toString());
+        assertEquals(2, actual.size());
+        assertEquals("test", actual.get(0).get("text"));
+        assertEquals(List.of("all", "features"), actual.get(0).get("detail"));
+        assertEquals("test", actual.get(1).get("text"));
+        assertEquals(List.of("all", "features"), actual.get(1).get("detail"));
     }
 
+    @Test
+    public void outputShouldEscapeSpecialCharacters() throws Exception {
+        OutputBuilder builder = createInstance();
+        builder.addTerm(new DummyTokenInfoWithFeatures("a\"b\\c\nd\t", "f\"1,f\\2,f\n3,f\t4"));
+        builder.output();
+
+        List<Map<String, Object>> actual = parseOutput(outContent.toString());
+        assertEquals(1, actual.size());
+        assertEquals("a\"b\\c\nd\t", actual.get(0).get("text"));
+        assertEquals(List.of("f\"1", "f\\2", "f\n3", "f\t4"), actual.get(0).get("detail"));
+    }
+
+    private List<Map<String, Object>> parseOutput(String output) throws Exception {
+        return OBJECT_MAPPER.readValue(output, new TypeReference<>() {});
+    }
+}
+
+class DummyTokenInfoWithFeatures extends TokenInfo {
+
+    private final String features;
+
+    public DummyTokenInfoWithFeatures(String token, String features) {
+        super(token);
+        this.features = features;
+    }
+
+    @Override
+    public String getAllFeatures() {
+        return features;
+    }
 }
