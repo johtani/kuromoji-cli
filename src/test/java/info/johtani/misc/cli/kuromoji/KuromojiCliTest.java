@@ -23,13 +23,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +44,7 @@ public class KuromojiCliTest {
     final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
+    final java.io.InputStream originalIn = System.in;
 
     @BeforeEach
     public void setUpStreams() {
@@ -50,6 +56,7 @@ public class KuromojiCliTest {
     public void restoreStreams() {
         System.setOut(originalOut);
         System.setErr(originalErr);
+        System.setIn(originalIn);
     }
 
     String getDefaultString() {
@@ -71,5 +78,26 @@ public class KuromojiCliTest {
         boolean containsCompound = tokens.contains("早稲田大学");
         boolean containsSplit = tokens.contains("早稲田") && tokens.contains("大学");
         assertTrue(containsCompound || containsSplit);
+    }
+
+    @Test
+    public void callWithInputFileShouldIgnoreStdin() throws IOException {
+        Path inputPath = Files.createTempFile("kuromoji-cli-", ".txt");
+        Files.writeString(inputPath, "東京都", StandardCharsets.UTF_8);
+        System.setIn(new ByteArrayInputStream("京都府\n".getBytes(StandardCharsets.UTF_8)));
+
+        KuromojiCli target = new KuromojiCli();
+        target.inputFile = inputPath.toString();
+        target.output = Output.wakati;
+        target.dictType = DictionaryType.ipadic;
+        target.mode = TokenizerBase.Mode.EXTENDED;
+
+        int exitCode = target.call();
+        String output = outContent.toString(StandardCharsets.UTF_8);
+        Files.deleteIfExists(inputPath);
+
+        assertEquals(0, exitCode);
+        assertTrue(output.contains("東京"));
+        assertFalse(output.contains("京都"));
     }
 }
