@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package info.johtani.misc.cli.kuromoji.tokanizer;
+package info.johtani.misc.cli.kuromoji.tokenizer;
 
 import com.atilika.kuromoji.TokenizerBase;
 import org.junit.jupiter.api.Test;

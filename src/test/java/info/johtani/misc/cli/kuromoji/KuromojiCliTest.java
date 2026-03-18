@@ -18,7 +18,7 @@ package info.johtani.misc.cli.kuromoji;
 
 import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.Output;
-import info.johtani.misc.cli.kuromoji.tokanizer.DictionaryType;
+import info.johtani.misc.cli.kuromoji.tokenizer.DictionaryType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
