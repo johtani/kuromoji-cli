@@ -7,8 +7,8 @@ This plugin provide Command Line Interface for Atilika Kuromoji.
 
 ### Requirements
 
-* Gradle >= 6.0.1
-* GraalVM >= java11-19.3.0 or JDK >= 1.8
+* JDK >= 17
+* Gradle Wrapper (`./gradlew`) を利用
 
 ### Build Native Image using JDK
 

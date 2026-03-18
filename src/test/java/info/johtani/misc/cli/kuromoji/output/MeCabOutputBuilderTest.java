@@ -16,9 +16,9 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MeCabOutputBuilderTest extends AbstractOutputBuilderTest {
 
@@ -36,10 +36,10 @@ public class MeCabOutputBuilderTest extends AbstractOutputBuilderTest {
         builder.addTerm(token);
         builder.output();
         assertEquals(token.getToken() + "\t" +
-                        token.getAllFeatures() + "\n" +
+                        token.getAllFeatures() + System.lineSeparator() +
                         token.getToken() + "\t" +
-                        token.getAllFeatures() + "\n" +
-                        "EOS\n",
+                        token.getAllFeatures() + System.lineSeparator() +
+                        "EOS" + System.lineSeparator(),
                 outContent.toString());
     }
 }

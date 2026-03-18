@@ -16,7 +16,7 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,7 +28,7 @@ public class AbstractOutputBuilderTest {
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
 
-    @Before
+    @BeforeEach
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));

@@ -17,40 +17,39 @@
 package info.johtani.misc.cli.kuromoji.tokanizer;
 
 import com.atilika.kuromoji.TokenizerBase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class TokenizerFactoryTest {
 
     @Test
     public void createIpadic() {
         Object obj = TokenizerFactory.create(DictionaryType.ipadic, TokenizerBase.Mode.NORMAL);
-        assertThat(obj, instanceOf(com.atilika.kuromoji.ipadic.Tokenizer.class));
+        assertInstanceOf(com.atilika.kuromoji.ipadic.Tokenizer.class, obj);
     }
 
     @Test
     public void createUnidic() {
         Object obj = TokenizerFactory.create(DictionaryType.unidic, TokenizerBase.Mode.NORMAL);
-        assertThat(obj, instanceOf(com.atilika.kuromoji.unidic.Tokenizer.class));
+        assertInstanceOf(com.atilika.kuromoji.unidic.Tokenizer.class, obj);
     }
 
     @Test
     public void createUnidicKanaaccent() {
         Object obj = TokenizerFactory.create(DictionaryType.unidic_kanaaccent, TokenizerBase.Mode.NORMAL);
-        assertThat(obj, instanceOf(com.atilika.kuromoji.unidic.kanaaccent.Tokenizer.class));
+        assertInstanceOf(com.atilika.kuromoji.unidic.kanaaccent.Tokenizer.class, obj);
     }
 
     @Test
     public void createJumandic() {
         Object obj = TokenizerFactory.create(DictionaryType.jumandic, TokenizerBase.Mode.NORMAL);
-        assertThat(obj, instanceOf(com.atilika.kuromoji.jumandic.Tokenizer.class));
+        assertInstanceOf(com.atilika.kuromoji.jumandic.Tokenizer.class, obj);
     }
 
     @Test
     public void createNaistjdic() {
         Object obj = TokenizerFactory.create(DictionaryType.naist_jdic, TokenizerBase.Mode.NORMAL);
-        assertThat(obj, instanceOf(com.atilika.kuromoji.naist.jdic.Tokenizer.class));
+        assertInstanceOf(com.atilika.kuromoji.naist.jdic.Tokenizer.class, obj);
     }
 }

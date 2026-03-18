@@ -16,10 +16,9 @@
 
 package info.johtani.misc.cli.kuromoji.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 
 public class OutputBuilderTest {
@@ -27,18 +26,18 @@ public class OutputBuilderTest {
     @Test
     public void createWakati() {
         Object obj = OutputBuilder.Factory.create(Output.wakati, System.out);
-        assertThat(obj, instanceOf(WakatiOutputBuilder.class));
+        assertInstanceOf(WakatiOutputBuilder.class, obj);
     }
 
     @Test
     public void createMeCab() {
         Object obj = OutputBuilder.Factory.create(Output.mecab, System.out);
-        assertThat(obj, instanceOf(MeCabOutputBuilder.class));
+        assertInstanceOf(MeCabOutputBuilder.class, obj);
     }
 
     @Test
     public void createJson() {
         Object obj = OutputBuilder.Factory.create(Output.json, System.out);
-        assertThat(obj, instanceOf(JSONOutputBuilder.class));
+        assertInstanceOf(JSONOutputBuilder.class, obj);
     }
 }
