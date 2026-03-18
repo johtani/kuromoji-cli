@@ -36,6 +36,8 @@ Also the file can be specified as a parameter.
 関西 関西国際空港 国際 空港 限定 トートバッグ
 ```
 
+If `<filename>` is specified, `kuromoji` reads only the file and does not read from standard input.
+
 ### Dictionary Type
 
 `ipadic`, `unidic`, `naist_jdic`, `jumandic`, and `unidic_kanaaccent` can be specified. Default is `ipadic`.

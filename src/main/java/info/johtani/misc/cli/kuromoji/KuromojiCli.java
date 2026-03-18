@@ -79,6 +79,7 @@ public class KuromojiCli implements Callable<Integer> {
                         tokenize(line, output, dictType, mode);
                     }
                 }
+                return exitCode;
             }
 
             try (Scanner stdin = new Scanner(System.in)) {
