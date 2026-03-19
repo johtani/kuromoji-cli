@@ -19,9 +19,11 @@ package info.johtani.misc.cli.kuromoji;
 import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.tokenizer.DictionaryType;
+import info.johtani.misc.cli.kuromoji.tokenizer.EngineType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -102,5 +104,31 @@ public class KuromojiCliTest {
         } finally {
             Files.deleteIfExists(inputPath);
         }
+    }
+
+    @Test
+    public void defaultEngineShouldBeAtilika() {
+        KuromojiCli target = new KuromojiCli();
+        new CommandLine(target).parseArgs();
+        assertEquals(EngineType.atilika, target.engine);
+    }
+
+    @Test
+    public void luceneEngineShouldWarnForUnsupportedOptions() {
+        System.setIn(new ByteArrayInputStream((getDefaultString() + "\n").getBytes(StandardCharsets.UTF_8)));
+
+        KuromojiCli target = new KuromojiCli();
+        target.engine = EngineType.lucene;
+        target.dictType = DictionaryType.unidic;
+        target.outputViterbi = true;
+
+        int exitCode = target.call();
+        String errOutput = errContent.toString(StandardCharsets.UTF_8);
+        String output = outContent.toString(StandardCharsets.UTF_8).trim();
+
+        assertEquals(0, exitCode);
+        assertTrue(errOutput.contains("--dictionary is ignored"));
+        assertTrue(errOutput.contains("--viterbi is not supported"));
+        assertFalse(output.isEmpty());
     }
 }
