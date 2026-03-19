@@ -19,10 +19,20 @@ package info.johtani.misc.cli.kuromoji;
 import com.atilika.kuromoji.TokenBase;
 import com.atilika.kuromoji.TokenizerBase;
 import info.johtani.misc.cli.kuromoji.output.AtilikaTokenInfo;
+import info.johtani.misc.cli.kuromoji.output.LuceneTokenInfo;
 import info.johtani.misc.cli.kuromoji.output.Output;
 import info.johtani.misc.cli.kuromoji.output.OutputBuilder;
 import info.johtani.misc.cli.kuromoji.tokenizer.DictionaryType;
+import info.johtani.misc.cli.kuromoji.tokenizer.EngineType;
 import info.johtani.misc.cli.kuromoji.tokenizer.TokenizerFactory;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.ja.JapaneseTokenizer;
+import org.apache.lucene.analysis.ja.tokenattributes.BaseFormAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.InflectionAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.PartOfSpeechAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.ReadingAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -30,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -62,6 +73,11 @@ public class KuromojiCli implements Callable<Integer> {
     )
     DictionaryType dictType = DictionaryType.ipadic;
 
+    @Option(names = {"-e", "--engine"},
+            description = "The tokenizer engine. ${COMPLETION-CANDIDATES} can be specified. Default is ${DEFAULT-VALUE}"
+    )
+    EngineType engine = EngineType.atilika;
+
     @Option(names = {"-v", "--viterbi"},
             defaultValue = "false",
             description = "The output viterbi lattice as DOT format to stdout. And token list is output as stderr"
@@ -72,6 +88,7 @@ public class KuromojiCli implements Callable<Integer> {
     public Integer call() {
         int exitCode = 0;
         try {
+            warnUnsupportedOptionsForLucene();
             if (inputFile != null && inputFile.isEmpty() == false) {
                 try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile))) {
                     String line;
@@ -96,7 +113,16 @@ public class KuromojiCli implements Callable<Integer> {
         return exitCode;
     }
 
-    void tokenize(String input, Output output, DictionaryType dictType, Mode mode){
+    void tokenize(String input, Output output, DictionaryType dictType, Mode mode) {
+        if (engine == EngineType.lucene) {
+            tokenizeWithLucene(input, output, mode);
+            return;
+        }
+
+        tokenizeWithAtilika(input, output, dictType, mode);
+    }
+
+    private void tokenizeWithAtilika(String input, Output output, DictionaryType dictType, Mode mode) {
         PrintStream outputStream = System.out;
         if (outputViterbi) {
             outputStream = System.err;
@@ -119,6 +145,56 @@ public class KuromojiCli implements Callable<Integer> {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void tokenizeWithLucene(String input, Output output, Mode mode) {
+        OutputBuilder outputBuilder = OutputBuilder.Factory.create(output, System.out);
+        JapaneseTokenizer.Mode luceneMode = JapaneseTokenizer.Mode.valueOf(mode.name());
+
+        try (Analyzer analyzer = new Analyzer() {
+            @Override
+            protected TokenStreamComponents createComponents(String fieldName) {
+                JapaneseTokenizer tokenizer = new JapaneseTokenizer(null, false, luceneMode);
+                return new TokenStreamComponents(tokenizer);
+            }
+        };
+             TokenStream tokenStream = analyzer.tokenStream("ignored", new StringReader(input))) {
+            CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
+            PartOfSpeechAttribute pos = tokenStream.getAttribute(PartOfSpeechAttribute.class);
+            ReadingAttribute reading = tokenStream.getAttribute(ReadingAttribute.class);
+            InflectionAttribute inflection = tokenStream.getAttribute(InflectionAttribute.class);
+            BaseFormAttribute baseForm = tokenStream.getAttribute(BaseFormAttribute.class);
+
+            tokenStream.reset();
+            while (tokenStream.incrementToken()) {
+                outputBuilder.addTerm(new LuceneTokenInfo(
+                        charTerm.toString(),
+                        pos.getPartOfSpeech(),
+                        inflection.getInflectionType(),
+                        inflection.getInflectionForm(),
+                        baseForm.getBaseForm(),
+                        reading.getReading(),
+                        reading.getPronunciation()
+                ));
+            }
+            tokenStream.end();
+            outputBuilder.output();
+        } catch (IOException ioe) {
+            throw new IllegalStateException("Failed to tokenize with Lucene Kuromoji.", ioe);
+        }
+    }
+
+    private void warnUnsupportedOptionsForLucene() {
+        if (engine != EngineType.lucene) {
+            return;
+        }
+
+        if (dictType != DictionaryType.ipadic) {
+            System.err.println("WARNING: --dictionary is ignored when --engine=lucene. Running with ipadic-equivalent behavior.");
+        }
+        if (outputViterbi) {
+            System.err.println("WARNING: --viterbi is not supported when --engine=lucene. Continuing without DOT output.");
         }
     }
 

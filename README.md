@@ -1,13 +1,13 @@
-# Command Line Interface for Atilika Kuromoji
+# Command Line Interface for Kuromoji (Atilika/Lucene)
 
-This plugin provide Command Line Interface for Atilika Kuromoji.
+This plugin provide Command Line Interface for Atilika Kuromoji and Lucene Kuromoji.
 
 
 ## Build
 
 ### Requirements
 
-* JDK >= 17
+* JDK >= 21
 * Gradle Wrapper (`./gradlew`) を利用
 
 ### Build Native Image using JDK
@@ -42,10 +42,19 @@ If `<filename>` is specified, `kuromoji` reads only the file and does not read f
 
 `ipadic`, `unidic`, `naist_jdic`, `jumandic`, and `unidic_kanaaccent` can be specified. Default is `ipadic`.
 
+### Engine
+
+`atilika` and `lucene` can be specified by `-e` / `--engine`. Default is `atilika`.
+
+If `lucene` is selected:
+
+* `-d` / `--dictionary` is ignored with warning, and tokenization runs as ipadic-equivalent behavior.
+* `-v` / `--viterbi` is not supported and emits warning.
+
 ### Tokenize mode
 
 `NORMAL`, `SEARCH`, `EXTENDED` can be specified. Default is `SEARCH`.
-*NOTE: This option can only use with `-d=ipadic`.*
+*NOTE: With Atilika engine, `-m` is effective for `-d=ipadic`.*
 
 ```
 % echo "関西国際空港限定トートバッグ" | kuromoji -m=NORMAL
@@ -76,7 +85,8 @@ EOS
 
 Kuromoji allow to output Viterbi lattice and path as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) format.
 This is debug purpose, but it is helpful to understand token outputs.
-If `-v` or `--viterbi` option is specified, **the command outputs DOT file to stdout and outputs tokens to stderr.** 
+If `-v` or `--viterbi` option is specified with `--engine=atilika`, **the command outputs DOT file to stdout and outputs tokens to stderr.**
+With `--engine=lucene`, this option is not supported and emits warning.
 
 ```sh
 % echo "関西国際空港限定トートバッグ" | build/graal/kuromoji -v > viterbi.dot

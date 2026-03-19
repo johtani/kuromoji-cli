@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2020 johtani
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package info.johtani.misc.cli.kuromoji.output;
+
+public class LuceneTokenInfo extends TokenInfo {
+    private final String allFeatures;
+
+    public LuceneTokenInfo(String token,
+                           String partOfSpeech,
+                           String inflectionType,
+                           String inflectionForm,
+                           String baseForm,
+                           String reading,
+                           String pronunciation) {
+        super(token);
+        String[] pos = toPosFields(partOfSpeech);
+        this.allFeatures = String.join(",",
+                pos[0],
+                pos[1],
+                pos[2],
+                pos[3],
+                normalize(inflectionType),
+                normalize(inflectionForm),
+                normalize(baseForm),
+                normalize(reading),
+                normalize(pronunciation)
+        );
+    }
+
+    @Override
+    public String getAllFeatures() {
+        return allFeatures;
+    }
+
+    private static String[] toPosFields(String partOfSpeech) {
+        String[] pos = {"*", "*", "*", "*"};
+        if (partOfSpeech == null || partOfSpeech.isEmpty()) {
+            return pos;
+        }
+
+        String[] raw = partOfSpeech.split(",");
+        for (int i = 0; i < pos.length && i < raw.length; i++) {
+            pos[i] = normalize(raw[i]);
+        }
+        return pos;
+    }
+
+    private static String normalize(String value) {
+        if (value == null || value.isEmpty()) {
+            return "*";
+        }
+        // Lucene sometimes returns whitespace-only features.
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? "*" : trimmed;
+    }
+}
