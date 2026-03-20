@@ -107,6 +107,52 @@ public class KuromojiCliTest {
     }
 
     @Test
+    public void callWithUtf8InputFileShouldReadUtf8() throws IOException {
+        Path inputPath = Files.createTempFile("kuromoji-cli-utf8-", ".txt");
+        try {
+            Files.writeString(inputPath, "関西国際空港限定トートバッグ\n", StandardCharsets.UTF_8);
+
+            KuromojiCli target = new KuromojiCli();
+            target.inputFile = inputPath.toString();
+            target.output = Output.wakati;
+            target.dictType = DictionaryType.ipadic;
+            target.mode = TokenizerBase.Mode.SEARCH;
+
+            int exitCode = target.call();
+            String output = outContent.toString(StandardCharsets.UTF_8).trim();
+
+            assertEquals(0, exitCode);
+            assertFalse(output.isEmpty());
+            assertTrue(
+                    output.contains("関西") || output.contains("関西国際空港") || output.contains("トートバッグ"),
+                    "UTF-8 input should not be mojibake."
+            );
+        } finally {
+            Files.deleteIfExists(inputPath);
+        }
+    }
+
+    @Test
+    public void callWithUtf8StdinShouldReadUtf8() {
+        System.setIn(new ByteArrayInputStream("関西国際空港限定トートバッグ\n".getBytes(StandardCharsets.UTF_8)));
+
+        KuromojiCli target = new KuromojiCli();
+        target.output = Output.wakati;
+        target.dictType = DictionaryType.ipadic;
+        target.mode = TokenizerBase.Mode.SEARCH;
+
+        int exitCode = target.call();
+        String output = outContent.toString(StandardCharsets.UTF_8).trim();
+
+        assertEquals(0, exitCode);
+        assertFalse(output.isEmpty());
+        assertTrue(
+                output.contains("関西") || output.contains("関西国際空港") || output.contains("トートバッグ"),
+                "UTF-8 stdin should not be mojibake."
+        );
+    }
+
+    @Test
     public void defaultEngineShouldBeAtilika() {
         KuromojiCli target = new KuromojiCli();
         new CommandLine(target).parseArgs();

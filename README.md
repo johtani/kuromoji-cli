@@ -12,11 +12,53 @@ This plugin provide Command Line Interface for Atilika Kuromoji and Lucene Kurom
 
 ### Build Native Image using JDK
 
+`nativeCompile` requires GraalVM JDK 21 with `native-image` installed.
+
+PowerShell example:
+
+```powershell
+$env:GRAALVM_HOME = "C:\path\to\graalvm-jdk-21"
+$env:JAVA_HOME    = $env:GRAALVM_HOME
+$env:Path         = "$env:JAVA_HOME\bin;$env:Path"
+
+gu install native-image
+java -version
+native-image --version
+```
+
 ```
 ./gradlew nativeImage
 ```
 
 Then, gradle builds native command `kuromoji` in `build/graal` directory.
+
+If you get `native-image.cmd wasn't found`, your Gradle JVM is not GraalVM. Set `GRAALVM_HOME` / `JAVA_HOME` to GraalVM and retry.
+
+#### Windows note (`vcvarsall.bat` error)
+
+On Windows, `nativeCompile` also requires MSVC toolchain from Visual Studio 2022.
+
+If you see:
+
+```
+Failed to find 'vcvarsall.bat' in a Visual Studio installation.
+```
+
+install **Visual Studio 2022 Build Tools** with:
+
+* Desktop development with C++
+* MSVC v143 - VS 2022 C++ x64/x86 build tools
+* Windows 10/11 SDK
+
+Then run in:
+
+* `x64 Native Tools Command Prompt for VS 2022`
+
+or from PowerShell:
+
+```powershell
+cmd /c """C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"" && gradlew.bat nativeCompile"
+```
 
 ## Usage
 
@@ -37,6 +79,23 @@ Also the file can be specified as a parameter.
 ```
 
 If `<filename>` is specified, `kuromoji` reads only the file and does not read from standard input.
+
+#### Windows / PowerShell encoding note
+
+`kuromoji` reads stdin and input files as UTF-8.
+
+If PowerShell shows `????????` when piping Japanese text, set UTF-8 before execution:
+
+```powershell
+$OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::InputEncoding = [System.Text.UTF8Encoding]::new($false)
+```
+
+Example:
+
+```powershell
+echo "関西国際空港限定トートバッグ" | .\build\native\nativeCompile\kuromoji.exe
+```
 
 ### Dictionary Type
 
