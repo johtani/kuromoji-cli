@@ -67,6 +67,10 @@ graalvmNative {
         main {
             imageName = 'kuromoji'
             mainClass = 'info.johtani.misc.cli.kuromoji.KuromojiCli'
+            resources {
+                autodetect()
+                includedPatterns.add('org/apache/lucene/analysis/ja/dict/.*\\.dat')
+            }
         }
     }
 }
