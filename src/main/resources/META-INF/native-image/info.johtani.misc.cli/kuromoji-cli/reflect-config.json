@@ -1,0 +1,14 @@
+[
+  {
+    "name": "org.apache.lucene.analysis.morph.ViterbiNBest$PositionNBest",
+    "unsafeAllocated": true,
+    "allPublicConstructors": true,
+    "allDeclaredConstructors": true,
+    "queryAllPublicConstructors": true,
+    "queryAllDeclaredConstructors": true
+  },
+  {
+    "name": "org.apache.lucene.analysis.morph.ViterbiNBest$PositionNBest[]",
+    "unsafeAllocated": true
+  }
+]

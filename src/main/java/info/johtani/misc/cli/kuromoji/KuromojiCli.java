@@ -29,21 +29,30 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ja.JapaneseTokenizer;
 import org.apache.lucene.analysis.ja.tokenattributes.BaseFormAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.BaseFormAttributeImpl;
 import org.apache.lucene.analysis.ja.tokenattributes.InflectionAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.InflectionAttributeImpl;
 import org.apache.lucene.analysis.ja.tokenattributes.PartOfSpeechAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.PartOfSpeechAttributeImpl;
 import org.apache.lucene.analysis.ja.tokenattributes.ReadingAttribute;
+import org.apache.lucene.analysis.ja.tokenattributes.ReadingAttributeImpl;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.util.AttributeFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.atilika.kuromoji.TokenizerBase.Mode;
 import static picocli.CommandLine.Option;
@@ -55,6 +64,8 @@ import static picocli.CommandLine.Parameters;
         description = "CLI for Atilika's Kuromoji"
 )
 public class KuromojiCli implements Callable<Integer> {
+    private static final String LUCENE_HOTSPOT_VM_OPTIONS_LOGGER = "org.apache.lucene.util.HotspotVMOptions";
+
     @Parameters(arity = "0..1", description = "The input file path that contains the text for analyzing")
     String inputFile;
 
@@ -90,7 +101,7 @@ public class KuromojiCli implements Callable<Integer> {
         try {
             warnUnsupportedOptionsForLucene();
             if (inputFile != null && inputFile.isEmpty() == false) {
-                try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile))) {
+                try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(inputFile), StandardCharsets.UTF_8)) {
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
                         tokenize(line, output, dictType, mode);
@@ -99,7 +110,7 @@ public class KuromojiCli implements Callable<Integer> {
                 return exitCode;
             }
 
-            try (Scanner stdin = new Scanner(System.in)) {
+            try (Scanner stdin = new Scanner(System.in, StandardCharsets.UTF_8)) {
                 while (stdin.hasNextLine()) {
                     String line = stdin.nextLine();
                     tokenize(line, output, dictType, mode);
@@ -155,7 +166,7 @@ public class KuromojiCli implements Callable<Integer> {
         try (Analyzer analyzer = new Analyzer() {
             @Override
             protected TokenStreamComponents createComponents(String fieldName) {
-                JapaneseTokenizer tokenizer = new JapaneseTokenizer(null, false, luceneMode);
+                JapaneseTokenizer tokenizer = new JapaneseTokenizer(createLuceneJapaneseAttributeFactory(), null, false, luceneMode);
                 return new TokenStreamComponents(tokenizer);
             }
         };
@@ -185,6 +196,17 @@ public class KuromojiCli implements Callable<Integer> {
         }
     }
 
+    private AttributeFactory createLuceneJapaneseAttributeFactory() {
+        // Start from Lucene's token factory to avoid reflective lookup for core attributes such as CharTermAttribute.
+        // Then pin Japanese attribute implementations explicitly for native-image compatibility.
+        AttributeFactory factory = TokenStream.DEFAULT_TOKEN_ATTRIBUTE_FACTORY;
+        factory = AttributeFactory.getStaticImplementation(factory, BaseFormAttributeImpl.class);
+        factory = AttributeFactory.getStaticImplementation(factory, InflectionAttributeImpl.class);
+        factory = AttributeFactory.getStaticImplementation(factory, PartOfSpeechAttributeImpl.class);
+        factory = AttributeFactory.getStaticImplementation(factory, ReadingAttributeImpl.class);
+        return factory;
+    }
+
     private void warnUnsupportedOptionsForLucene() {
         if (engine != EngineType.lucene) {
             return;
@@ -199,7 +221,12 @@ public class KuromojiCli implements Callable<Integer> {
     }
 
     public static void main(String... args) {
+        suppressLuceneHotspotWarning();
         int exitCode = new CommandLine(new KuromojiCli()).execute(args);
         System.exit(exitCode);
+    }
+
+    private static void suppressLuceneHotspotWarning() {
+        Logger.getLogger(LUCENE_HOTSPOT_VM_OPTIONS_LOGGER).setLevel(Level.OFF);
     }
 }
